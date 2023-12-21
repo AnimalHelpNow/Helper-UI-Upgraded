@@ -1,0 +1,13 @@
+global:
+  js:
+    https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js: { }
+    assets/helperui.behavior.js: { }
+    assets/helperui_node_form.js: { }
+    assets/helperui_node_view.js: { }
+    assets/helperui_old: { }
+    assets/helperui_user_form.js: { }
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal
+    - core/drupalSettings

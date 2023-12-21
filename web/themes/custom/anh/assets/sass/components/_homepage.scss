@@ -1,0 +1,141 @@
+body.path-frontpage {
+  .main-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .view-id-frontpage {
+    display: none;
+  }
+
+  .page-header {
+    margin-top: 15px;
+  }
+
+  .block h2 {
+    line-height: 1.5;
+    margin-bottom: 40px;
+    
+    @media (min-width: 1220px) {
+      font-size: 36px;
+    }
+  }
+
+  nav#block-staffmenu > h2 {
+    margin: 0 0 40px;
+
+    @media (min-width: 1220px) {
+      font-size: 36px;
+    }
+  }
+
+  &:not(.user-logged-in) .content-wrapper {
+    background: transparent;
+  }
+}
+
+.helperui-button {
+  width: 200px;
+  text-align: center;
+  border: 2px solid $red;
+  border-radius: 20px;
+  margin: 0 auto;
+
+  a {
+    color: $text !important;
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
+section#block-homepageboxforhelperui {
+  margin-top: 100px;
+  margin-bottom: 40px;
+  min-height: 400px;
+}
+
+div.content-wrapper {
+  background: $gray;
+
+  @media (max-width: 767px) {
+    > .container {
+      padding: 0;
+    }
+
+    .col-sm-3,
+    .col-sm-9 {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+}
+
+nav#block-staffmenu {
+  margin: 20px 0px 20px 0px;
+  border: 1px solid;
+  padding: 20px;
+
+  li {
+    > a {
+      padding: 0;
+      color: $red;
+      text-decoration: underline;
+      background: transparent;
+
+      &.is-active {
+        color: $text;
+      }
+
+      &:hover {
+        text-decoration: none;
+        color: $text;
+      }
+    }
+  }
+
+  ul.dropdown-menu > li > a {
+    font-size: 18px;
+    padding: 3px 20px;
+  }
+}
+
+ul.menu--staff-menu {
+  padding-left: 10px;
+  
+  > li {
+    list-style-image: url(../img/menu-collapsed.png);
+
+    &.expanded {
+      list-style-image: url(../img/menu-expanded.png);
+    }
+
+    > ul {
+      padding-left: 0.5em;
+    }
+
+    li {
+      list-style-image: url(../img/menu-leaf.png);
+      list-style-type: square;
+    }
+  }
+}
+
+.view-moderated-content {
+  ul {
+    list-style: none;
+    margin-bottom: 0.75em;
+
+    li {
+      margin-bottom: 0.25em;
+
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .view-empty {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+}

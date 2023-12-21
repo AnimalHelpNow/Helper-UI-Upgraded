@@ -1,0 +1,432 @@
+<?php
+
+/**
+ * @file
+ * Includes helperui.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function helperui_form_node_helper_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Get the phone and helpertype stored on get listed form.
+  $tempstore = \Drupal::service('tempstore.private')->get('helperui');
+  $primaryphone = $tempstore->get('primaryphone');
+  $helpertype = $tempstore->get('helpertype');
+
+  $form['field_phone_pub']['widget'][0]['value']['#default_value'] = $primaryphone;
+  $form['field_helpertype_id']['widget'][0]['value']['#default_value'] = $helpertype;
+  $form['#validate'][] = 'helperui_form_node_helper_form_validate';
+}
+
+/**
+ * Validate submission values in the FORM_ID() form.
+ */
+function helperui_form_node_helper_form_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_dnd_reason')) {
+    $dnd_reason = ($form_state->getValue('field_dnd_reason') == '_none') ? NULL : $form_state->getValue('field_dnd_reason');
+  }
+
+  if ($form_state->hasValue('field_donotdisplay')) {
+    $dnd_set = $form_state->getValue('field_donotdisplay');
+  }
+
+  if ($form_state->hasValue('field_donotdisplay_dates')) {
+    $dnd_start = $form_state->getValue('field_donotdisplay_dates')[0]['value'];
+    $dnd_end = $form_state->getValue('field_donotdisplay_dates')[0]['end_value'];
+  }
+
+  if ($form_state->hasValue('field_afterhoursphone_pub')) {
+    $afterhoursphone = $form_state->getValue('field_afterhoursphone_pub');
+  }
+
+  if ($form_state->hasValue('field_hours')) {
+    $coded_hours = $form_state->getValue('field_hours');
+  }
+
+  // Validate field_donotdisplay field.
+  if (($dnd_set) || (!empty($dnd_reason))) {
+    if ($dnd_set) {
+      if (empty($dnd_reason)) {
+        $form_state->setErrorByName('field_donotdisplay', t('Conceal Profile is set, please indicate the DND Reason for concealment.'));
+      }
+    }
+    else {
+      $form_state->setErrorByName('field_donotdisplay', t('DND Reason is populated, please check the box to Conceal Profile.'));
+    }
+  }
+
+  // Validate field_donotdisplay_dates field.
+  if ((!empty($dnd_start)) || (!empty($dnd_end)) || (!empty($dnd_reason))) {
+    if (!empty($dnd_start)) {
+      if (!empty($dnd_end)) {
+        if (empty($dnd_reason)) {
+          $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal start date and end date are populated, please indicate the reason for temporary concealment (e.g. full, vacation).'));
+        }
+      }
+      else {
+        if (empty($dnd_reason)) {
+          $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal start date is populated, please indicate end date and the reason for temporary concealment (e.g. full, vacation).'));
+        }
+        else {
+          $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal start date and reason are populated, please indicate end date.'));
+        }
+      }
+    }
+    else {
+      if (!empty($dnd_end)) {
+        if (empty($dnd_reason)) {
+          $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal end date is populated, please indicate start date and the reason for temporary concealment (e.g. full, vacation).'));
+        }
+        else {
+          $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal end date and reason are populated, please indicate start date.'));
+        }
+      }
+      else {
+        $form_state->setErrorByName('field_donotdisplay_dates', t('Temporary Conceal reason is populated, please indicate start date and end date.'));
+      }
+    }
+    $dnd_limit = date('Y-m-d', strtotime('+1 year'));
+    if ($dnd_end > $dnd_limit) {
+      $form_state->setErrorByName('field_donotdisplay_dates', t('End date must be before @dnd_limit', ['@dnd_limit' => $dnd_limit]));
+    }
+  }
+
+  // Validate field_afterhoursphone_pub field.
+  if ((!empty($afterhoursphone)) && (!empty($coded_hours))) {
+    if (($coded_hours == 'M-U 0-24') || ($coded_hours == 'M 00-24;T 00-24;W 00-24;R 00-24;F 00-24;S 00-24;U 00-24')) {
+      $form_state->setErrorByName('field_afterhoursphone_pub', t('Please do not enter an After Hours Phone if your Primary Phone is available 24/7.'));
+    }
+  }
+
+  // Validate field_phone_pub field.
+  if ($form_state->hasValue('field_phone_pub') && $form_state->getValue('field_phone_pub') == '(000) 000-0000') {
+    $form_state->setErrorByName('field_phone_pub', t('Primary Phone cannot be (000) 000-0000.'));
+  }
+
+  // Validate field_alterphone_pub field.
+  if ($form_state->hasValue('field_alterphone_pub') && $form_state->getValue('field_alterphone_pub') == '(000) 000-0000') {
+    $form_state->setErrorByName('field_alterphone_pub', t('Alternate Phone cannot be (000) 000-0000.'));
+  }
+
+  // Validate field_afterhoursphone_pub field.
+  if ($form_state->hasValue('field_afterhoursphone_pub') && $form_state->getValue('field_afterhoursphone_pub') == '(000) 000-0000') {
+    $form_state->setErrorByName('field_afterhoursphone_pub', t('After Hours Phone cannot be (000) 000-0000.'));
+  }
+
+  // Validate field_url_pub field.
+  if ($form_state->hasValue('field_url_pub')) {
+    $url_pub = $form_state->getValue('field_url_pub');
+    $url_pub_start7 = strtolower(substr($url_pub, 0, 7));
+    $url_pub_start8 = strtolower(substr($url_pub, 0, 8));
+    if (($url_pub_start7 > "") && ($url_pub_start8 != "https://") && ($url_pub_start7 != "http://")) {
+      $form_state->setErrorByName('field_url_pub', t('Web Address must begin with https:// or http://'));
+    }
+  }
+
+  // Validate field_facebook_pub field.
+  if ($form_state->hasValue('field_facebook_pub')) {
+    $facebook_pub = $form_state->getValue('field_facebook_pub');
+    $facebook_pub_start = strtolower(substr($facebook_pub, 0, 24));
+    if (($facebook_pub_start > "") && ($facebook_pub_start != "https://www.facebook.com")) {
+      $form_state->setErrorByName('field_facebook_pub', t('Facebook Address must begin with https://www.Facebook.com'));
+    }
+  }
+
+  // Validate field_displaycontactname field.
+  if ($form_state->hasValue('field_displaycontactname')) {
+    $contact_error = NULL;
+    if (empty($form_state->getValue('field_contactlast'))) {
+      $contact_error = 'The box is checked for Display Contact Name.  Please enter Primary Contact First Name.';
+    }
+    if (empty($form_state->getValue('field_contactfirst'))) {
+      $contact_error = t('The box is checked for Display Contact Name.  Please enter Primary Contact Last Name.');
+    }
+    if (empty($form_state->getValue('field_contactlast')) && empty($form_state->getValue('field_contactfirst'))) {
+      $contact_error = t('The box is checked for Display Contact Name.  Please enter Primary Contact First and Last Name.');
+    }
+    if (!empty($contact_error)) {
+      form_error('field_displaycontactname', $contact_error);
+    }
+  }
+
+  // Validate field_email_pub field.
+  if ($form_state->hasValue('field_email_pub')) {
+    if ($form_state->hasValue('field_email_priv')) {
+      $form_state->setErrorByName('field_email_priv', t('The Email (Public) field is populated.  Please also populate the Email (Private) field.'));
+    }
+  }
+
+  // Validate field_walkins field.
+  if ($form_state->hasValue('field_walkins')) {
+    if ($form_state->hasValue('field_displayaddr')) {
+      $form_state->setErrorByName('field_displayaddr', t('The box is checked for Walk-Ins Accepted.  Please check the box for Display Physical Address.'));
+    }
+  }
+
+  // Validate field_helper_juris_type_id field.
+  if ($form_state->hasValue('field_helper_juris_type_id') && $form_state->getValue('field_helper_juris_type_id') == 54739) {
+    if ($form_state->hasValue('field_jurisdiction_area_id')) {
+      $form_state->setErrorByName('field_jurisdiction_area_id', t('The helper_juris_type_id is set to Jurisdication Area.  Please populate jurisdiction_area_id field.'));
+    }
+  }
+
+  // Validate field_helpertype_id field.
+  if ($form_state->hasValue('field_helpertype_id')) {
+    $helpertype = $form_state->getValue('field_helpertype_id');
+    switch ($helpertype) {
+      case 45:
+        if ($form_state->hasValue('field_displayaddr')) {
+          $form_state->setErrorByName('field_displayaddr', t('Helper Type is set to VetE.  Please check the box for Display Physical Address.'));
+        }
+        break;
+
+      case 46:
+        if ($form_state->hasValue('field_displayaddr')) {
+          $form_state->setErrorByName('field_displayaddr', t('Helper Type is set to VetM.  Please uncheck the box for Display Physical Address.'));
+        }
+
+        if ($form_state->hasValue('field_vethelpswildlife')) {
+          $form_state->setErrorByName('field_vethelpswildlife', t('Helper Type is set to VetE or VetM.  Please check the box for VetHelpsWildlife.'));
+        }
+        break;
+    }
+  }
+
+  // Validate field_preferred_contact field.
+  if ($form_state->hasValue('field_preferred_contact')) {
+    $preferred = $form_state->getvalue('field_preferred_contact');
+
+    switch ($preferred) {
+      case 'Phone_Pub':
+        if (empty($form_state->getValue('field_phone_pub'))) {
+          $form_state->setErrorByName('field_phone_pub', t('Preferred Contact Method is set to Primary Phone.  Please enter the Primary Phone number.'));
+        }
+        break;
+
+      case 'Phone_PubText':
+        if (empty($form_state->getValue('field_phone_pub'))) {
+          $form_state->setErrorByName('field_phone_pub', t('Preferred Contact Method is set to Primary Phone Text.  Please enter the Primary Phone number.'));
+        }
+
+        if (empty($form_state->getValue('field_phone_pubtext'))) {
+          $form_state->setErrorByName('field_phone_pubtext', t('Preferred Contact Method is set to Primary Phone Text.  Please check the box for Primary Phone Accepts Texts.'));
+        }
+        break;
+
+      case 'AlterPhone_Pub':
+        if (empty($form_state->getValue('field_alterphone_pub'))) {
+          $form_state->setErrorByName('field_alterphone_pub', t('Preferred Contact Method is set to Secondary Phone.  Please enter the Secondary Phone number.'));
+        }
+        break;
+
+      case 'AlterPhone_PubText':
+        if (empty($form_state->getValue('field_alterphone_pub'))) {
+          $form_state->setErrorByName('field_alterphone_pub', t('Preferred Contact Method is set to Secondary Phone Text.  Please enter the Secondary Phone number.'));
+        }
+
+        if (empty($form_state->getValue('field_alterphone_pubtext'))) {
+          $form_state->setErrorByName('field_alterphone_pubtext', t('Preferred Contact Method is set to Secondary Phone Text.  Please check the box for Secondary Phone Accepts Texts.'));
+        }
+        break;
+
+      case 'AfterHoursPhone_Pub':
+        if (empty($form_state->getValue('field_afterhoursphone_pub'))) {
+          $form_state->setErrorByName('field_afterhoursphone_pub', t('Preferred Contact Method is set to After Hours Phone.  Please enter the After Hours Phone number.'));
+        }
+        break;
+
+      case 'AfterHoursPhone_PubText':
+        if (empty($form_state->getValue('field_afterhoursphone_pub'))) {
+          $form_state->setErrorByName('field_afterhoursphone_pub', t('Preferred Contact Method is set to After Hours Phone Text.  Please enter the After Hours Phone number.'));
+        }
+
+        if (empty($form_state->getValue('field_afterhoursphone_pubtext'))) {
+          $form_state->setErrorByName('field_afterhoursphone_pubtext', t('Preferred Contact Method is set to After Hours Phone Text.  Please check the box for After Hours Phone Accepts Texts.'));
+        }
+        break;
+
+      case 'Email_Pub':
+        if (empty($form_state->getValue('field_email_pub'))) {
+          $form_state->setErrorByName('field_email_pub', t('Preferred Contact Method is set to Email.  Please enter the Email (Public) address.'));
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  // Validate Animal Types.
+  $animalTypes = [
+    'field_smallmammals',
+    'field_mediummammals',
+    'field_largemammals',
+    'field_fawns',
+    'field_adultdeer',
+    'field_skunks',
+    'field_passerines',
+    'field_waterfowl',
+    'field_raptors',
+    'field_marinemammals',
+    'field_seaturtles',
+    'field_reptiles',
+    'field_amphibians',
+    'field_rabiesvectorspecies',
+  ];
+
+  $selectedAnimalType = FALSE;
+  foreach ($animalTypes as $key => $animalType) {
+    if (!empty($form_state->getValue($animalType))) {
+      $selectedAnimalType = TRUE;
+    }
+  }
+
+  if ($selectedAnimalType) {
+    $form_state->setErrorByName('field_smallmammals', t('Please check the box for at lease one Animal Type.'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function helperui_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user = \Drupal::currentUser();
+  $roles = $user->getRoles();
+
+  if ($user->id() > 0) {
+    if (in_array('administrator', $roles) ||
+          in_array('editor', $roles) ||
+          in_array('staff', $roles) ||
+          in_array('developer', $roles)) {
+
+      // User Profile form - show only US time zones
+      // this form normally shows the complete list of time zones.
+      if ($form_id == 'user_form') {
+        if (isset($form['timezone'])) {
+          // Pull timezone field out of default fieldset.
+          $form['timezone'] = $form['timezone']['timezone'];
+          // Edit timezone list.
+          $form['#after_build'][] = 'helperui_timezone_modify';
+        }
+      }
+
+      // User Register form - show only US time zones
+      // this form normally shows the complete list of time zones.
+      if ($form_id == 'user_register_form') {
+        if (isset($form['timezone'])) {
+          // Pull timezone field out of default fieldset.
+          $form['timezone'] = $form['timezone']['timezone'];
+        }
+        // Edit timezone list.
+        $form['#after_build'][] = 'helperui_timezone_modify';
+      }
+    }
+  }
+  else {
+    // User is NOT logged in (anonymous)
+    // User Register form - add instructions.
+    if ($form_id == 'user_register_form') {
+      $form['account']['instructions'] = [
+        '#type' => 'markup',
+        '#markup' => '<br><span style="color:red">FOR REHABILITATORS ALREADY LISTED WITH AHNOW AND
+          ALREADY INVITED TO CREATE AN ACCOUNT.<br>If you do not have an invitation to create an account, 
+          please request one by emailing info@AHNow.org.</span><br>',
+        '#weight' => -20,
+      ];
+    }
+  }
+}
+
+/**
+ * Helper function for forms which normally show the complete timezone list.
+ */
+function helperui_timezone_modify(array &$form, FormStateInterface $form_state) {
+  $zones_array = helperui_timezones_array();
+  $form['timezone']['#options'] = $zones_array;
+  return $form;
+}
+
+/**
+ * Build timezones array as desired.
+ */
+function helperui_timezones_array() {
+  $zonelist = timezone_identifiers_list();
+  $zones = [];
+
+  foreach ($zonelist as $zone) {
+    // Only use certain cities.
+    if ($zone == 'America/New_York' ||
+        $zone == 'America/Chicago' ||
+        $zone == 'America/Denver' ||
+        $zone == 'America/Phoenix' ||
+        $zone == 'America/Los_Angeles' ||
+        $zone == 'America/Anchorage' ||
+        $zone == 'America/Adak' ||
+        $zone == 'Pacific/Honolulu') {
+      // Get timezone abbreviation.
+      $dateTime = new DateTime();
+      $dateTime->setTimeZone(new DateTimeZone($zone));
+      $zonename = $dateTime->format('T');
+      $zones[$zone] = t('GMT@offset @name - @zone: @date', [
+        '@offset' => \Drupal::service('date.formatter')->format(REQUEST_TIME, 'custom', 'O', $zone),
+        '@name' => $zonename,
+        '@zone' => str_replace('_', ' ', $zone),
+        '@date' => \Drupal::service('date.formatter')->format(REQUEST_TIME, 'custom', 'l, F j, Y - H:i', $zone),
+      ]);
+    }
+  }
+  // Sort zones alphabetically.
+  asort($zones);
+  return $zones;
+}
+
+/**
+ * Helper function to override the timezone on user profile form.
+ */
+function helperui_timezone_modify_helper(array &$form, FormStateInterface $form_state) {
+  $user = \Drupal::currentUser();
+  $roles = $user->getRoles();
+
+  // Pass current user roles to js setting for use in helperui_user_form.js.
+  $form['#attached']['drupalSettings'][] = ['userRoles' => $roles];
+
+  $form['#attached']['js'][] = [
+    'type' => 'file',
+    'data' => drupal_get_path('module', 'helperui') . '/helperui_user_form.js',
+    'weight' => 10,
+  ];
+
+  $zones_array = helperui_timezones_array_helper();
+  $form['timezone']['#options'] = $zones_array;
+  return $form;
+}
+
+/**
+ * Helper function to build timezone array as desired.
+ */
+function helperui_timezones_array_helper() {
+  $zonelist = timezone_identifiers_list();
+  $zones = [];
+
+  foreach ($zonelist as $zone) {
+    // Only use certain cities.
+    if ($zone == 'America/Denver') {
+      // Get timezone abbreviation.
+      $dateTime = new DateTime();
+      $dateTime->setTimeZone(new DateTimeZone($zone));
+      $zonename = $dateTime->format('T');
+      $zones[$zone] = t('GMT@offset @name - @zone: @date', [
+        '@offset' => \Drupal::service('date.formatter')->format(REQUEST_TIME, 'custom', 'O', $zone),
+        '@name' => $zonename,
+        '@zone' => str_replace('_', ' ', $zone),
+        '@date' => \Drupal::service('date.formatter')->format(REQUEST_TIME, 'custom', 'l, F j, Y - H:i', $zone),
+      ]);
+    }
+  }
+  // Sort zones alphabetically.
+  asort($zones);
+  return $zones;
+}

@@ -1,0 +1,7 @@
+<?php
+
+/**
+ * @file lssutilities.module 
+ * The LSS Utilities module contains functions for debugging and discovery
+ */
+

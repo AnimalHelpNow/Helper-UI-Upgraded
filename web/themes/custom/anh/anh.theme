@@ -1,0 +1,132 @@
+<?php
+
+/**
+ * @file
+ * Custom ANH theme.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements THEMENAME_preprocess_html().
+ */
+function anh_preprocess_html(&$variables) {
+  $user_roles = \Drupal::currentUser()->getRoles();
+  if (in_array('administrator', $user_roles)) {
+    $variables['attributes']['class'][] = 'admin-user';
+  }
+}
+
+/**
+ * Implements THEMENAME_preprocess_page_title().
+ */
+function anh_preprocess_page_title(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  if (\Drupal::service('path.matcher')->isFrontPage()) {
+    $variables['title'] = 'Welcome to AHNow Helper UI';
+  }
+
+  if(strpos($current_path, 'search') !== FALSE) {
+    $variables['title'] = 'Search';
+  }
+}
+
+/**
+ * Implements hook_preprocess_breadcrumb().
+ */
+function anh_preprocess_breadcrumb(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ($variables['breadcrumb']) {
+
+    // Add link to user page for anonymous users.
+    if (\Drupal::currentUser()->isAnonymous() && strpos($current_path, 'user') !== FALSE) {
+      $variables['breadcrumb'][] = [
+        'text' => 'User account',
+        'url' => '/user',
+      ];
+    }
+
+    if(strpos($current_path, 'search/content') !== FALSE) {
+      // Add link to search content page for anonymous users.
+      $variables['breadcrumb'][] = [
+        'text' => 'Content',
+        'url' => '/search/content',
+      ];
+    }
+  }
+}
+
+/**
+ * Implements THEMENAME_preprocess_page().
+ */
+function anh_preprocess_page(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
+  if (\Drupal::currentUser()->isAnonymous()) {
+    $variables['is_user_page'] = strpos($current_path, 'user') !== FALSE;
+  }
+}
+
+/**
+ * Implements template_preprocess_search_result().
+ */
+function anh_preprocess_search_result(&$variables) {
+  $result = $variables['result'];
+  $node = $result['node'];
+  $variables['node_type'] = ($node) ? $node->bundle() : '';
+
+  if(!empty($node)) {
+    $entity_type = 'node';
+    $view_mode = 'search_result';
+    $nid = $node->id();
+
+    switch ($node->bundle()) {
+      case 'helper':
+        $created = \Drupal::service('date.formatter')->format($node->getCreatedTime(), 'custom', 'Y-m-d');
+        $updated = \Drupal::service('date.formatter')->format($node->getChangedTime(), 'custom', 'Y-m-d');
+
+        $author_edit = $node->getRevisionUser()->getAccountName();
+        $uid = $node->getRevisionUser()->id();
+
+        $authored = t('Created @created : @author <br> Updated @updated : <a href="/user/@uid">@author_edit</a>', [
+          '@created' => $created, 
+          '@author' => $result['user'],
+          '@updated' => $updated,
+          '@author_edit' => $author_edit,
+          '@uid' => $uid
+        ]);
+
+        $variables['author'] = $authored;
+        break;
+      default:
+        break;
+    }
+
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+    $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+    $node = $storage->load($nid);
+    $view = $view_builder->view($node, $view_mode);
+    $variables['content'] = $view;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function anh_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'user_login_form') {
+    $form['name']['#title'] = t('Username or e-mail address');
+  }
+
+  if ($form_id == 'user_register_form') {
+    $form['#prefix'] = '<br><span class="red">' . t('FOR REHABILITATORS ALREADY LISTED WITH AHNOW AND ALREADY INVITED TO CREATE AN ACCOUNT.<br>If you do not have an invitation to create an account, please request one by emailing info@AHNow.org.') . '</span><br>';
+  }
+
+  if ($form_id == 'user_pass') {
+    $form['actions']['submit']['#value'] = t('E-mail new password');
+  }
+
+  if ($form_id == 'node_helper_form') {
+    $form['#attached']['library'][] = 'anh/helper';
+  }
+}

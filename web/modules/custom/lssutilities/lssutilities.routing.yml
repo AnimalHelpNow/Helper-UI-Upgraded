@@ -1,0 +1,49 @@
+lssutilities.tenatest:
+  path: '/tenatest/{node}'
+  defaults:
+    _controller: \Drupal\lssutilities\Controller\LssutilitiesController::tenatest
+    _title: 'Tena Test Output'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lssutilities.tenatest_taxonomy:
+  path: '/tenatest_taxonomy/{term}'
+  defaults:
+    _controller: \Drupal\lssutilities\Controller\LssutilitiesController::lssTenatestTaxonomy
+    _title: 'Tena Test Output'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      term:
+        type: entity:taxonomy_term
+
+lssutilities.tenatest_entity:
+  path: '/tenatest_entity/{entity}'
+  defaults:
+    _controller: \Drupal\lssutilities\Controller\LssutilitiesController::tenatestEntity
+    _title: 'Tena Test Output'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      entity:
+        type: entity:node
+
+lssutilities.tenatest_textlength:
+  path: '/tenatest_textlength/{field_name}/{field_length}'
+  defaults:
+    _controller: \Drupal\lssutilities\Controller\LssutilitiesController::tenatestTextlength
+    _title: 'Tena Test Output'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      field_name:
+        type: field_name
+      field_length:
+        type: field_length

@@ -1,0 +1,8 @@
+name: LSSUtilities
+description: 'LSS Utilities'
+package: 'LSS Custom Applications'
+core_version_requirement: ^8 || ^9
+type: module
+libraries:
+  - lssutilities/global
+

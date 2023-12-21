@@ -1,0 +1,52 @@
+helperui.amilisted:
+  path: '/helperui_amilisted'
+  defaults:
+    _form: '\Drupal\helperui\Form\AmIListedForm'
+    _title: 'Am I Listed?'
+    _description: 'Am I Listed Form'
+  requirements:
+    _permission: 'access content'
+
+helperui.getlisted:
+  path: '/helperui_getlisted/form'
+  defaults:
+    _form: '\Drupal\helperui\Form\GetListedForm'
+    _title: 'Get Listed'
+    _description: 'Get Listed Multistep Form'
+  requirements:
+    _permission: 'access content'
+
+helperui.connectrecord:
+  path: '/helperui_connectrecord'
+  defaults:
+    _form: '\Drupal\helperui\Form\ConnectRecord'
+    _title: 'Connect to Your Record'
+    _description: 'Connect to Your Record Form'
+  requirements:
+    _permission: 'access content'
+
+helperui.helperjurisdiction:
+  path: '/helperjurisdiction/{node}'
+  defaults:
+    _controller: '\Drupal\helperui\Controller\HelperuiController::helperJurisdiction'
+    _title: 'Helper Jurisdiction Process'
+    _description: 'Add/update Helper Jurisdiction Nodes'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+helperui.helperjurisdiction_ja:
+  path: '/helperjurisdiction_ja/{node}'
+  defaults:
+    _controller: '\Drupal\helperui\Controller\HelperuiController::helperJurisdictionJa'
+    _title: 'Run Helper Jurisdiction Process for JA updates'
+    _description: 'Call Helper Jurisdiction function during JA update'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node

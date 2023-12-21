@@ -1,0 +1,103 @@
+header.navbar {
+  background: $red;
+  border-radius: 0;
+  border: none;
+  margin-bottom: 0;
+
+  .navbar-header {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+    @include flex(center, space-between);
+
+    @media (min-width: 1220px) {
+      margin-left: auto;
+      margin-right: auto;
+      width: 1200px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    @media (max-width: 767px) {
+      @include flex_dir(column);
+      padding: 0;
+    }
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .region-header {
+    @media (max-width: 767px) {
+      width: 370px;
+    }
+  }
+
+  .region-navigation {
+    width: 100%;
+
+    @media (min-width: 1220px) {
+      width: calc(100% - 580px);
+    }
+
+    @media (min-width: 768px) {
+      @include flex(flex-end);
+      @include flex_dir(column);
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+      width: calc(100% - 350px);
+    }
+  }
+
+  .logo {
+    margin: 0;
+    padding: 0;
+
+    img {
+      max-width: 100%;
+    }
+  }
+}
+
+// Search form
+.search-block-form {
+  input.form-control {
+    width: 300px;
+    margin-right: 5px;
+
+    @media (max-width: 767px) {
+      max-width: 250px;
+    }
+  }
+
+  form {
+    @media (max-width: 767px) {
+      @include flex(center, center);
+    }
+  }
+}
+
+nav#block-anh-account-menu a {
+  color: $text;
+  font-size: 14px;
+  padding: 13px 32px 13px 8px;
+
+  &:hover {
+    color: $link_hover;
+  }
+
+  &.is-active {
+    background: transparent;
+    color: $link_hover;
+  }
+}
+
+ul.menu--account {
+  @media (max-width: 767px) {
+    @include flex(center, center);
+    margin: 0;
+  }
+}

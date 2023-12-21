@@ -1,0 +1,244 @@
+body.path-user {
+  @media (min-width: 1200px) {
+    .main-container {
+      padding: 0;
+
+    section.col-sm-12 {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .highlighted.col-sm-12 {
+    @media (min-width: 768px) {
+      padding-left: 10px;
+    }
+  }
+
+  &:not(.user-logged-in) .region-content .page-header {
+    display: none;
+  }
+
+  h1.page-title {
+    margin-top: -5px;
+  }
+
+  article {
+    h4.label {
+      font-size: 18px;
+      color: $text;
+      display: block;
+      text-align: left;
+      font-style: normal;
+      font-weight: bold;
+      padding-left: 0;
+      padding-bottom: 10px;
+      margin-left: -15px;
+    }
+
+    > div.js-form-type-item {
+      margin-top: 20px;
+      padding-left: 20px;
+      font-style: italic;
+      position: relative;
+
+      &::before {
+        content: "History";
+        font-size: 20px;
+        letter-spacing: 0.4px;
+        font-weight: 700;
+        font-style: normal;
+        border-bottom: 1px solid #ccc;
+        display: block;
+        margin-left: -15px;
+      }
+    }
+  }
+}
+
+h1.page-title {
+  margin-bottom: 25px;
+}
+
+form {
+  &[class*="user"]  {
+    label {
+      &[for="edit-name"],
+      &[for="edit-pass"],
+      &[for="edit-mail"] {
+        display: flex;
+        flex-flow: row wrap;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+
+        &::before {
+          content: "You may login with either your assigned username or your e-mail address.";
+          font-size: 0.85em;
+          font-weight: 400;
+          color: #6a6a6a;
+          order: 3;
+          width: 100%;
+        }
+      }
+
+      &[for="edit-pass"]::before {
+        content: "The password field is case sensitive.";
+      }
+
+      &::after {
+        margin-left: 3px;
+        background-size: 7px 6px;
+        height: 6px;
+        width: 7px;
+      }
+    }
+
+    input {
+      @media (min-width: 768px) {
+        width: auto;
+      }
+    }
+
+    button {
+      margin: 0;
+    }
+  }
+
+  &.user-register-form {
+    label {
+      &[for="edit-mail"]::before {
+        content: "A valid e-mail address. All e-mails from the system will be sent to this address. The e-mail address is not made public and will only be used if you wish to receive a new password or wish to receive certain news or notifications by e-mail.";
+      }
+
+      &[for="edit-name"]::before {
+        content: "Spaces are allowed; punctuation is not allowed except for periods, hyphens, apostrophes, and underscores.";
+      }
+    }
+
+    div[data-drupal-selector="edit-account"] {
+      display: flex;
+      flex-flow: row wrap;
+      flex-direction: column-reverse;
+    }
+
+    .captcha {
+      border: none;
+      margin: 0;
+
+      .panel-heading,
+      .panel-body {
+        padding: 0;
+        background: transparent;
+        border: none;
+      }
+
+      .panel-heading a,
+      #captcha--description {
+        font-size: 18px;
+        color: $text;
+        padding-top: 0;
+      }
+
+      .form-item-captcha-response {
+        display: flex;
+        flex-direction: column;
+
+        label { margin-bottom: 0; }
+
+        input {
+          order: 3;
+          width: 141px;
+        }
+
+        #edit-captcha-response--description {
+          color: #6a6a6a;
+          font-size: 0.85em;
+          margin-top: 0;
+        }
+      }
+    }
+  }
+
+  &.user-pass {
+    label[for="edit-name"]::before,
+    .form-item-name + p {
+      display: none;
+    }
+  }
+
+  .form-item,
+  .form-actions {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+
+ul.tabs--primary {
+  border-bottom: 1px solid #bbb;
+  border-collapse: collapse;
+  height: auto;
+  line-height: normal;
+  list-style: none;
+  margin: 5px;
+  padding: 0 0 0 1em;
+  white-space: nowrap;
+  display: flex;
+  flex-flow: row wrap;
+
+  li {
+    display: inline;
+    margin-right: 0.5em;
+
+    a {
+      background-color: #ddd;
+      border-color: #bbb !important;
+      border-style: solid solid none solid;
+      border-radius: 0;
+      border-width: 1px;
+      height: auto;
+      line-height: normal;
+      margin-right: 0.5em;
+      padding: 0 1em;
+      text-decoration: none;
+
+      &[href="/user/password"] {
+        font-size: 0;
+
+        &::before {
+          font-size: 18px;
+          content: "Request new password";
+          padding: 0 1em;
+          display: block;
+        }
+      }
+    }
+
+    &.active > a {
+      color: $black;
+      border-bottom: transparent !important;
+
+      &:hover,
+      &:focus {
+        color: $black;
+        background-color: #eee;
+        border-color: #ccc;
+        border-bottom-color: #eee;
+      }
+    }
+
+    &:first-child { order: 2; }
+    &:nth-child(2) { order: 1; }
+    &:last-child { order: 3; }
+  }
+}
+
+.breadcrumb {
+  padding: 0; 
+  background: transparent;
+  margin-bottom: 15px;
+
+  a {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,7 @@
+name: 'HelperUI'
+type: module
+description: 'HelperUI Custom Module'
+core_version_requirement: ^9 || ^10
+package: 'AHNow Custom Modules'
+libraries:
+  - helperui/global

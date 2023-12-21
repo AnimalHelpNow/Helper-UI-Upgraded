@@ -1,0 +1,9 @@
+global:
+  version: VERSION
+  js:
+    js/lssutilities.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/jquery
+    - core/jquery.once

@@ -1,0 +1,63 @@
+form.node-helper-form {
+  margin-bottom: 20px;
+}
+
+div.filter-wrapper {
+  height: auto;
+}
+
+.node.helper.full {
+  footer {
+    margin-bottom: 20px;
+  }
+
+  .group-dummy {
+    padding: 0 15px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+
+    .panel-heading,
+    .panel-body {
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    .panel-heading a {
+      background: url(../img/menu-expanded.png) 5px 55% no-repeat;
+      padding-left: 15px;
+      font-size: 18px;
+      color: $text;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &.collapsed {
+        background-image: url(../img/menu-collapsed.png);
+        background-position: 5px 50%;
+      }
+    }
+
+    .help-block {
+      color: $text;
+      font-size: 18px;
+    }
+  }
+
+  .field-group-html-element {
+    min-height: 1em;
+    margin-bottom: 20px;
+
+    .field-group-title {
+      background: url(../img/menu-expanded.png) 5px 65% no-repeat;
+      padding-left: 15px;
+    }
+
+    &.collapsed .field-group-title {
+      background-image: url(../img/menu-collapsed.png);
+      background-position: 5px 50%;
+    }
+  }
+}

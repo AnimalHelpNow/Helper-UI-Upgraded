@@ -1,0 +1,197 @@
+<?php
+
+namespace Drupal\anh_migrate\Plugin\migrate\source;
+
+use Drupal\anh_migrate\Plugin\migrate\source\AdvancedNodeComplete;
+use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\migrate\Row;
+use Drupal\Core\Database\Database;
+
+/**
+ * Drupal 7 Fieldable Pane source from database.
+ *
+ * For available configuration keys, refer to the parent class.
+ *
+ * @MigrateSource(
+ *   id = "d7_helper_node",
+ *   source_module = "node"
+ * )
+ */
+class Helper extends AdvancedNodeComplete {
+  
+  protected $addedFields = [
+    'field_wrencertified' => ['field_wrencertified_value'], 
+    'field_maytransport' => ['field_maytransport_value'],
+      'field_url_pub' => ['field_url_pub_value'],
+      'field_waterfowl' => ['field_waterfowl_value'],
+      'field_walkins' => ['field_walkins_value'],
+      'field_vethelpswildlife' => ['field_vethelpswildlife_value'],
+      'field_timezone' => ['field_timezone_value'],
+      'field_donotdisplay_reason' => ['field_donotdisplay_reason_value'],
+      'field_donotdisplay_dates' => ['field_donotdisplay_dates_value'],
+      'field_smallmammals' => ['field_smallmammals_value'],
+      'field_skunks' => ['field_skunks_value'],
+      'field_secret_code' => ['field_secret_code_value'],
+      'field_alterphone_pubtext' => ['field_alterphone_pubtext_value'],
+      'field_alterphone_pub' => ['field_alterphone_pub_value'],
+      'field_seaturtles' => ['field_seaturtles_value'],
+      'field_reptiles' => ['field_reptiles_value'],
+      'field_raptors' => ['field_raptors_value'],
+      'field_rabiesvectorspecies' => ['field_rabiesvectorspecies_value'],
+      'field_phone_pubtext' => ['field_phone_pubtext_value'],
+      'field_phone_pub' => ['field_phone_pub_value'],
+      'field_contactsuffix' => ['field_contactsuffix_value'], 
+      'field_contacttitle' => ['field_contacttitle_value'],  
+      'field_contactpreferred' => ['field_contactpreferred_value'], 
+      'field_contactmiddle' => ['field_contactmiddle_value'],
+      'field_contactlast' => ['field_contactlast_value'],
+      'field_contactfirst' => ['field_contactfirst_value'],
+      'field_preferred_contact' => ['field_preferred_contact_value'],
+      'field_location_level_1_id' => ['field_location_level_1_id_nid'],
+      'field_local_jurisdiction_id' => ['field_local_jurisdiction_id_nid'],
+      'field_country_id' => ['field_country_id_nid'],
+      'field_location_level_2_id' => ['field_location_level_2_id_nid'],
+      'field_facebook_pub' => ['field_facebook_pub_value'],
+      'field_oldhelperid' => ['field_oldhelperid_value'],
+      'field_notes_internal' => ['field_notes_internal_value'],
+      'field_notes_pub' => ['field_notes_pub_value'],
+      'field_name_pub' => ['field_name_pub_value'],
+      'field_mediummammals' => ['field_mediummammals_value'],
+      'field_marinemammals' => ['field_marinemammals_value'],
+      'field_longitude' => ['field_longitude_value'],
+      'field_licensetype' => ['field_licensetype_value'], 
+      'field_latitude' => ['field_latitude_value'],  
+      'field_largemammals' => ['field_largemammals_value'], 
+      'field_jurisdiction_area_id' => ['field_jurisdiction_area_id_nid'], 
+      'field_jurisdictional_helper' => ['field_jurisdictional_helper_value'], 
+      'field_hours' => ['field_hours_value'], 
+      'field_hoursknown' => ['field_hoursknown_value'], 
+      'field_helper_juris_type_id' => ['field_helper_juris_type_id_nid'],
+      'field_helpertype_id' => ['field_helpertype_id_nid'],  
+      'field_gfascertified' => ['field_gfascertified_value'], 
+      'field_geoposition' => ['field_geoposition_value'],   
+      'field_fawns' => ['field_fawns_value'],   
+      'field_email_pub' => ['field_email_pub_value'],  
+      'field_email_priv' => ['field_email_priv_value'],  
+      'field_dummy' => ['field_dummy_value'],  
+      'field_donotsendbulkahnowupdates' => ['field_donotsendbulkahnowupdates_value'], 
+      'field_donotcontact' => ['field_donotcontact_value'], 
+      'field_dnd_reason' => ['field_dnd_reason_value'], 
+      'field_displayaddr' => ['field_displayaddr_value'],
+      'field_adultdeer' => ['field_adultdeer_value'],
+      'field_afterhoursphone_pub' => ['field_afterhoursphone_pub_value'], 
+      'field_afterhoursphone_pubtext' => ['field_afterhoursphone_pubtext_value'],
+      'field_amphibians' => ['field_amphibians_value'],
+      'field_animalgroup_id' => ['field_animalgroup_id_nid'], 
+      'field_animal_notes' => ['field_animal_notes_value'],
+      'field_openholidays' => ['field_openholidays_value'], 
+      'field_bats' => ['field_bats_value'],
+      'field_donotdisplay' => ['field_donotdisplay_value'],
+      'field_delete_date' => ['field_delete_date_value'],
+      'field_displaycontactname' => ['field_displaycontactname_value'],
+      'field_displayintopresults' => ['field_displayintopresults_value'],  
+      'field_hours_available' => [
+        'field_hours_available_day',
+        'field_hours_available_starthours',
+        'field_hours_available_endhours',
+        'field_hours_available_comment'
+      ],
+      'field_mailaddress1' => [
+        'field_mailaddress1_value'
+      ],
+      'field_mailaddress2' => [
+        'field_mailaddress2_value'
+      ],
+      'field_mailcity' => [
+        'field_mailcity_value'
+      ],
+      'field_mailstate' => [
+        'field_mailstate_value'
+      ],
+      'field_mailzip' => [
+        'field_mailzip_value'
+      ]
+  ];
+
+  public function query() {
+    $query = parent::query();
+    $query->range(0, 1);
+    return $query;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareRow(Row $row) {
+    parent::prepareRow($row);
+    // Example: for setting the source property
+    // $source = $row->getSourceProperty();
+
+    $nid = $row->getSourceProperty('nid');
+    
+
+    // Example:
+    $data = $row->getSource();
+
+    // Handle the mailng address country.....
+    $connection = $this->useSourceDb();
+    $query = $connection->select('node', 'n');
+    $query->fields('n', ['title']);
+    $query->condition('n.nid', $data['field_country_id_nid']);
+    $results = $query->execute()->fetchAll();
+    if ($results) {
+      $record = array_shift($results);
+      $row->setSourceProperty('field_mailzip_country', $row->title);
+      $data = $row->getSource();
+    }
+
+    error_log("Data: " . print_r($data, true));
+    return $row;
+  }
+
+  /**
+   * Group Query Helper - overcomes too many joins
+   */
+  protected function addOnQueryHelper(&$row, $nid, $fields) {
+    set_time_limit(3000);
+    $connection = $this->useSourceDb();
+    $query = $connection->select('node', 'n');
+    $query->fields('n', ['nid']);
+
+    $query->condition('n.nid', $nid, '=');
+
+    // Join each field
+    foreach($fields as $field_id => $field_value) {
+      $query->join("field_data_{$field_id}", $field_id, "{$field_id}.entity_id = n.nid");
+      $query->addField($field_id, $field_value, $field_id);
+      $results = $query->execute()->fetchAll();
+      $data = [];
+      foreach($results as $record) {
+        $data[] = $record->{$field_id};
+      }
+      $row->setSourceProperty($field_id, $data);
+    }
+    
+    $connection = $this->useTargetDb();
+    
+    return $row;
+  }
+
+
+  /**
+   * Use Migration target database.
+   */
+  protected function useSourceDb() {
+    Database::setActiveConnection('d7');
+    return Database::getConnection();
+  }
+
+  /**
+   * Use Site database.
+   */
+  protected function useTargetDb() {
+    Database::setActiveConnection('default');
+    return Database::getConnection();
+  }
+
+}

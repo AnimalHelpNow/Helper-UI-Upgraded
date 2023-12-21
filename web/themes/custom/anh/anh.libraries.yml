@@ -1,0 +1,19 @@
+global-styling:
+  css:
+    theme:
+      assets/css/vgq7baw.css: {}
+      assets/css/screen.min.css: { minified: true }
+  js:
+    assets/js/scripts.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once
+
+helper:
+  js:
+    assets/js/helper.behavior.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once

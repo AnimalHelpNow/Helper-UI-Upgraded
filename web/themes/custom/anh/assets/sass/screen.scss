@@ -1,0 +1,249 @@
+// A cleaner way to do breakpoints/media queries, http://breakpoint-sass.com/
+// @import "breakpoint";
+// End libs
+@import "variables/**/*";
+@import "components/**/*";
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+body {
+  color: $text;
+  font-family: $mainFont;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: 0.4px;
+  margin-top: 0;
+}
+
+h1, h2 {
+  font-family: $droidSans;
+  letter-spacing: 0.4px;
+  font-weight: 400;
+}
+
+h2.block-title,
+#block-staffmenu-menu {
+  font-size: 18px;
+  margin: 0 0 10px;
+}
+
+.page-header {
+  border-bottom: transparent;
+  padding-bottom: 0;
+}
+
+h3 {
+  font-family: 'Lato', sans-serif;
+  letter-spacing: 0.4px;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0px;
+}
+
+/* h4 is only used for footer nav on this site */
+h4 {
+  font-family: 'Lato', sans-serif;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0px;
+}
+
+a,
+a:link,
+a:visited {
+  color: $red;
+}
+
+a:hover, a:focus,
+h2 a:hover, h2 a:focus,
+h3 a:hover, h3 a:focus,
+h4 a:hover, h4 a:focus,
+#block-boxes-default-footer-info a:hover,
+#block-boxes-default-footer-info a:focus {
+  color: $text;
+}
+
+.red {
+  color: red;
+}
+
+.breadcrumb {
+  > li {
+    + li {
+      &::before {
+        content: " » ";
+        color: $black;
+        padding: 0;
+      }
+    }
+  }
+}
+
+.container {
+  @media (min-width: 1220px) {
+    width: 1180px;
+
+    .highlighted,
+    .highlighted + section.col-sm-12 {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
+
+// Form styles override
+textarea,
+select,
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"] {
+  -webkit-appearance: none;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
+  background-color: #fff;
+  border: 1px solid;
+  border-color: #848484 #c1c1c1 #e1e1e1;
+  color: #000;
+  outline: 0;
+  padding: 2px 3px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  height: 1.8em;
+  // *padding-top: 2px; /* IE7 */
+  // *padding-bottom: 1px; /* IE7 */
+  // *height: auto; /* IE7 */
+}
+
+button.btn {
+  border-radius: 11px !important;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(1, #ddd));
+  background: -moz-linear-gradient(top center, #fff 0%, #ddd 100%);
+  border: 1px solid;
+  border-color: #ddd #bbb #999;
+  cursor: pointer;
+  color: $text;
+  font: bold 12px/1.2 Arial, sans-serif;
+  outline: 0;
+  overflow: visible;
+  padding: 3px 10px 4px;
+  text-shadow: #fff 0 1px 1px;
+  width: auto;
+  margin: 0;
+
+  &:hover {
+    background: #FFFFFF;
+    color: $text;
+    border: 1px solid;
+  }
+}
+
+.page-node-type-page .helperui-button {
+  margin: 0;
+}
+
+.view {
+  table.table {
+    border: 1px solid #ccc;
+
+    th {
+      font-weight: normal;
+      background: #f7f7f7;
+      border-width: 1px;
+    }
+
+    tr {
+      background: transparent !important;
+    }
+
+    td {
+      border: none !important;
+    }
+
+    th, td {
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+
+    caption {
+      color: $black;
+      text-align: center;
+      padding-bottom: 0;
+    }
+  }
+
+  &.stripped-style {
+    table.table {
+      border: 1px solid #ccc;
+
+      th {
+        font-weight: normal;
+        background: #f7f7f7;
+        border-width: 1px;
+        border-bottom: 1px solid #ccc;
+      }
+
+      tbody > tr {
+        border-bottom: 1px solid #ccc;
+        
+        &:nth-of-type(even) {
+          background: #F1F5FA !important;
+        }
+
+        &:hover td {
+          background: #FFFEEE !important;
+        }
+      }
+
+      caption {
+        color: $black;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.staff-menu-page {
+  a {
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+body.admin-user {
+  @media (min-width: 1220px) {
+    .staff-menu-page,
+    article.helper.full {
+      max-width: 580px;
+    }
+
+    .staff-menu-page.full-table {
+      max-width: min-content;
+    }
+  }
+}

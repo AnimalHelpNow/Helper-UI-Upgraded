@@ -1,0 +1,141 @@
+<?php
+
+/**
+ * @file
+ * Custom ANH module functions.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_field_field_uniqueid_compute().
+ */
+function computed_field_field_uniqueid_compute($entity_type_manager, $entity, $fields, $delta) {
+  $nid = $entity->id();
+  return $nid;
+}
+
+/**
+ * Implements hook_field_field_latitude_compute().
+ */
+function computed_field_field_latitude_compute($entity_type_manager, $entity, $fields, $delta) {
+  $geoPosition = $entity->get('field_geoposition')->value;
+  $lat_text = 0;
+  if (!empty($geoPosition)) {
+    $comma = strpos($geoPosition, ',');
+    if (!empty($comma)) {
+      $lat_text = substr($geoPosition, 0, $comma);
+    }
+  }
+
+  return 0 + (float) $lat_text;
+}
+
+/**
+ * Implements hook_field_field_longitude_compute().
+ */
+function computed_field_field_longitude_compute($entity_type_manager, $entity, $fields, $delta) {
+  $geoPosition = $entity->get('field_geoposition')->value;
+  $long_text = 0;
+  if (!empty($geoPosition)) {
+    $comma = strpos($geoPosition, ',');
+    if (!empty($comma)) {
+      $long_text = ltrim(substr($geoPosition, $comma + 1));
+    }
+  }
+
+  return 0 + (float) $long_text;
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function anh_custom_entity_presave(EntityInterface $entity) {
+  switch ($entity->bundle()) {
+    case 'helper':
+      // Sync Physical Address to Mailing Address field
+      // when Same As Physical Address checkbox is clicked.
+      $sameAddress = $entity->get('field_copy_physicaladdress')->getValue();
+      if ($sameAddress) {
+        $physicalAddr = $entity->get('field_physical_address')->getValue();
+        $entity->set('field_mailing_address', $physicalAddr);
+      }
+      break;
+
+    default:
+      break;
+  }
+}
+
+function anh_custom_views_pre_execute(\Drupal\views\ViewExecutable $view) {
+  // Check if it's a REST export display.
+ if ($view->current_display === 'rest_export_1') {
+   $requestStack = \Drupal::service('request_stack');
+   $currentRequest = $requestStack->getCurrentRequest();
+   $modifiedSince = $currentRequest->query->get('modified_since');
+   $items = $currentRequest->query->get('ps');
+   $page = $currentRequest->query->get('p');
+   
+   if($items || $page){
+     $view->getQuery()->setLimit($items);
+     $view->getQuery()->setOffset(($page - 1) * $items);
+   }
+   if($modifiedSince){
+     $year = substr($modifiedSince, 0, 4);
+     $month = substr($modifiedSince, 5, 2);
+     $day = substr($modifiedSince, 8, 2);
+     $hour = substr($modifiedSince, 11, 2);
+     $minute = substr($modifiedSince, 14, 2);
+     $second = substr($modifiedSince, 17, 2);
+     $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+     $view->setExposedInput(['created' => $timestamp]);
+   }
+ }
+}
+
+function anh_custom_views_post_render(\Drupal\views\ViewExecutable $view, &$output, $cache) {
+ // Check if the view has the REST export display.
+ if ($view->getDisplay()->display['id'] === 'rest_export_1') {
+   if (!empty($output['#markup'])) {
+     $data1 = $output['#markup']->__toString();
+     $data = json_decode($data1, true);
+     
+     $keyMap = [
+       'field_local_jurisdiction_name_1' => 'physical Jurisdiction',
+       'field_display_name' => 'physical administrative_area_level_2',
+
+       // countey key replace
+       'field_local_jurisdiction_name_3' => 'County Jurisdiction',
+       'field_display_name_3' => 'County Jurisdiction administrative_area_level_2',
+       'field_location_level_1_abbrev_4' => 'County Jurisdiction administrative_area_level_1',
+       'field_country_id_2' => 'County Jurisdiction country',
+
+       //city key replce
+       'field_local_jurisdiction_name_2' => 'City Jurisdiction',
+       'field_location_level_2_name_2' => 'City Jurisdiction locality',
+       'field_display_name_1' => 'City Jurisdiction administrative_area_level_2',
+       'field_location_level_1_abbrev_2' => 'City Jurisdiction administrative_area_level_1',
+       'field_country_id_1' => 'City Jurisdiction country',
+
+       // multi key replce
+       'field_primary_key' => 'multi Jurisdiction pk',
+       'field_ja_type' => 'multi JurisdictionType',
+       'field_location_level_2_name_3' => 'multi Jurisdiction locality',
+       'field_display_name_2' => 'multi Jurisdiction administrative_area_level_2',
+       'field_location_level_1_abbrev_3' => 'multi Jurisdiction administrative_area_level_1',
+       'field_country_abbrev' => 'multi Jurisdiction country',
+       'nothing_2' => 'multi Jurisdiction',
+       // Add more key mappings as needed
+     ];
+     $data = array_map(function($item) use ($keyMap) {
+       $keys = array_map(function($key) use ($keyMap) {
+           return isset($keyMap[$key]) ? $keyMap[$key] : $key;
+       }, array_keys($item));
+       $values = array_values($item);
+       return array_combine($keys, $values);
+     }, $data);
+     $jsonUpdated = json_encode($data);
+     $output['#markup'] = $jsonUpdated;
+   }
+ }
+}
